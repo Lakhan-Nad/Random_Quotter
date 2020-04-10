@@ -1,0 +1,22 @@
+[
+  {
+    "quote": "Wise men don't need advice. Fools won't take it",
+    "author": "Benjamin Franklin",
+    "keywords": ["wise", "BenjaminFranklin", "advice", "laws"]
+  },
+  {
+    "quote": "The power of accurate observation is frequently called cynicism by those who don't have it",
+    "author": "George Bernard Shaw",
+    "keywords": ["observation", "power", "judgement", "GeorgeBernardShaw"]
+  },
+  {
+    "quote": "It's not enough to know how to ride - one must know how to fall.",
+    "author": "Mexican Proverb",
+    "keywords": ["fall", "ride", "life", "motivation", "MexicanProverb"]
+  },
+  {
+    "quote": "Some cause happiness wherever they go; others, whenever they go.",
+    "author": "Oscar Wilde",
+    "keywords": ["happiness", "charm", "life", "smile", "OscarWilde"]
+  }
+]

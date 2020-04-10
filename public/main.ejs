@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quotter</title>
+  </head>
+  <body>
+    <button onclick="random()">Random</button>
+    <button onclick="next()">Next</button>
+    <button onclick="prev()">Previous</button>
+    <br />
+    <span>
+      <%= data.quote %>
+    </span>
+    <br />
+    By:
+    <span>
+      <%= data.author %>
+    </span>
+    <br />
+    <span>
+      <% for(let i = 0; i < data.keywords.length; i++){ %> # <%=
+      data.keywords[i] %> &nbsp; <% } %>
+    </span>
+    <br />
+    <button onclick="show_new_add()">Add New Quote</button>
+    <div id="addnew" style="display: none;">
+      <div id="dataField">
+        Quote: <textarea id="quote"></textarea><br />
+        Author: <input type="text" id="author" /><br />
+      </div>
+      <button onclick="addHashtag()">Add keyword</button>
+      <button onclick="submit()">SUBMIT</button>
+    </div>
+    <script src="/works.js"></script>
+  </body>
+</html>
