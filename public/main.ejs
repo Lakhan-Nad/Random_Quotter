@@ -11,19 +11,26 @@
     <button onclick="prev()">Previous</button>
     <br />
     <span>
+      <% if(data){ %>
       <%= data.quote %>
+      <% } %>
     </span>
     <br />
     By:
     <span>
+      <% if(data){ %>
       <%= data.author %>
+      <% } %>
     </span>
     <br />
     <span>
+      <% if(data){ %>
       <% for(let i = 0; i < data.keywords.length; i++){ %> # <%=
       data.keywords[i] %> &nbsp; <% } %>
+      <% } %>
     </span>
     <br />
+    <p>To get quote by keyword use<strong>/keyword/&lt;keyword you want to search for&gt;</strong></p>
     <button onclick="show_new_add()">Add New Quote</button>
     <div id="addnew" style="display: none;">
       <div id="dataField">

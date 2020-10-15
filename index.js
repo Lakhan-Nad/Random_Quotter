@@ -10,9 +10,15 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("views", path.join(__dirname, "public"));
 app.set("view engine", "ejs");
 
+const emptyData = {
+  quote: "Unavailable",
+  keywords: [],
+};
+
 function load() {
   return new Promise((res, rej) => {
-    fs.readFile("./something.json", (err, data) => {
+    const filePath = "./quotes.json";
+    fs.readFile(filePath, (err, data) => {
       if (err) {
         console.log(err);
         rej(err);
@@ -23,6 +29,9 @@ function load() {
     });
   });
 }
+
+var quotes = [];
+var limit = 0;
 
 let generate = async () => {
   let data = await load();
@@ -39,8 +48,10 @@ app.get("/", (req, res, next) => {
 
 app.get("/number/:number", (req, res, next) => {
   let number = Number(req.params.number);
-  if (isNaN(number) || number < 0 || number > limit) {
-    return res.redirect("/random");
+  if (limit == 0) {
+    res.render("main", { data: emptyData });
+  } else if (isNaN(number) || number < 0 || number > limit) {
+    res.redirect("/random");
   } else {
     res.render("main", { data: quotes[req.params.number - 1] });
   }
@@ -48,47 +59,54 @@ app.get("/number/:number", (req, res, next) => {
 
 app.get("/next/:number", (req, res, next) => {
   let number = Number(req.params.number) + 1;
-  if (!isNaN(number) && number <= limit) {
-    let url = "/number/" + number;
-    return res.redirect(url);
+  if (!isNaN(number) && number <= limit && number > 0) {
+    res.redirect(`/number/${number}`);
+  } else if (number == limit + 1) {
+    res.redirect(`/number/${1}`);
   } else {
-    return res.redirect("/random");
+    res.redirect("/random");
   }
 });
 
 app.get("/prev/:number", (req, res, next) => {
   let number = Number(req.params.number) - 1;
-  if (!isNaN(number) && number > 0) {
-    let url = "/number/" + number;
-    return res.redirect(url);
+  if (!isNaN(number) && number > 0 && number <= limit) {
+    res.redirect(`/number/${number}`);
+  } else if (number == 0) {
+    res.redirect(`/number/${limit}`);
   } else {
-    return res.redirect("/random");
+    res.redirect("/random");
   }
 });
 
 app.get("/random", (req, res, next) => {
   let number = Math.floor(Math.random() * limit + 1);
-  let url = "/number/" + number;
-  return res.redirect(url);
+  res.redirect(`/number/${number}`);
 });
 
 app.post("/add", (req, res, next) => {
   let obj = { quote: req.body.quote, author: req.body.author };
   let keywords = [];
   if (req.body.keywords) {
-    keywords = req.body.keywords.split(" ");
+    let array = req.body.keywords.split(" ");
+    for (let x of array) {
+      x = x.trim().toLowerCase();
+      if (x.length > 0) {
+        keywords.push(x);
+      }
+    }
   }
   let author = req.body.author.replace(/\s+/g, "");
   keywords.push(author);
-  obj.keywords = keywords;
+  obj["keywords"] = keywords;
   quotes.push(obj);
-  fs.writeFile("./something.json", JSON.stringify(quotes), () => {
+  const filePath = "./quotes.json";
+  fs.writeFile(filePath, JSON.stringify(quotes), () => {
     console.log("New Quote Added");
     limit++;
-    let url = "/number/" + limit;
     if (req.xhr) {
       res.json({
-        url: url,
+        url: `/number/${limit}`,
       });
     } else {
       res.redirect(url);
@@ -96,27 +114,21 @@ app.post("/add", (req, res, next) => {
   });
 });
 
-app.post("/keyword", (req, res, next) => {
-  keywords = req.body.keyword.split(/\s+/);
-  console.log(keywords);
-  let index = Math.floor(Math.random() * keywords.length);
-  // console.log(index);
-  let searchItem = keywords[index];
-  // console.log(searchItem);
+app.get("/keyword/:keyword", (req, res, next) => {
+  let keyword = req.params.keyword.toLowerCase();
+  console.log(`Call by keyword: ${keyword}`);
+  let searchItem = keyword;
   let randarr = [];
   for (let i = 0; i < limit; i++) {
     if (quotes[i].keywords.includes(searchItem)) {
       randarr.push(i + 1);
     }
   }
-  // console.log(randarr);
-  index = Math.floor(Math.random() * randarr.length);
-  // console.log(index);
   if (randarr.length > 0) {
-    let url = "/number/" + randarr[index];
-    return res.redirect(url);
+    let index = Math.floor(Math.random() * randarr.length);
+    res.redirect(`/number/${randarr[index]}`);
   } else {
-    return res.redirect("/random");
+    res.redirect("/random");
   }
 });
 
@@ -130,7 +142,7 @@ app.use((req, res, next) => {
 // Error Handler
 app.use((err, req, res, next) => {
   console.log(err);
-  res.status(500 || err.status);
+  res.status(err.status || 500);
   res.json(err);
 });
 

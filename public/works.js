@@ -1,18 +1,17 @@
 function random() {
-  let url = window.location.origin;
-  url = url + "/random";
+  let url = window.location.origin + "/random";
   window.location.assign(url);
 }
 function next() {
   let url = window.location.pathname;
-  let [dash, path, number] = url.split("/");
-  url = window.location.origin + "/next/" + number;
+  let number = url.split("/")[2];
+  url = window.location.origin + `/next/${number}`;
   window.location.assign(url);
 }
 function prev() {
   let url = window.location.pathname;
-  let [dash, path, number] = url.split("/");
-  url = window.location.origin + "/prev/" + number;
+  let number = url.split("/")[2];
+  url = window.location.origin + `/prev/${number}`;
   window.location.assign(url);
 }
 
@@ -57,7 +56,7 @@ function submit() {
     }
     obj.author = author.value.trim();
     let keywords = "";
-    for (x of hashes) {
+    for (let x of hashes) {
       let t = x.value.trim();
       keywords += " " + t;
     }
@@ -71,8 +70,8 @@ function submit() {
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4 && xhr.status === 200) {
         let path = JSON.parse(this.response).url;
-        let url = window.location.origin + path;
-        window.location.assign(url);
+        let url2 = window.location.origin + path;
+        window.location.assign(url2);
       }
     };
     xhr.send(data);
